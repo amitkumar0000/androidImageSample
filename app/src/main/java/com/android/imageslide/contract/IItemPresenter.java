@@ -7,5 +7,4 @@ public interface IItemPresenter {
 
     Item getItem(int position);
 
-    void loadImage(String thumbnail, int position);
 }

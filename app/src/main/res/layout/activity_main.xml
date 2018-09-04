@@ -12,10 +12,10 @@
         android:background="@drawable/img1"
         >
         <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imagelist"
-            android:visibility="gone"
+            android:visibility="visible"
             />
         <ProgressBar
             android:layout_width="wrap_content"

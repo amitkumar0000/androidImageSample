@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.LruCache;
 
 import com.android.imageslide.Utils.Constants;
 import com.android.imageslide.contract.INetworkInterface;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -29,9 +31,14 @@ public class NetworkManager {
     INetworkInterface networkInterface;
     String itemUrl;
 
-    public NetworkManager(){
-        client = new OkHttpClient();
-        itemUrl = Constants.url+":"+Constants.port;
+
+    public NetworkManager(Context context){
+        OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
+        builder.cache(
+                new Cache(context.getCacheDir(), Constants.CACHE_SIZE_BYTES));
+        client = builder.build();
+//        itemUrl = Constants.url+":"+Constants.port;
+        itemUrl = "https://rocky-caverns-52177.herokuapp.com/";
     }
 
     public void loadItem(INetworkInterface networkInterface) {
@@ -39,10 +46,12 @@ public class NetworkManager {
         new OkhttpAsync(client,networkInterface).execute(itemUrl);
     }
 
-    public void loadImage(String path, int position) {
+    public void loadImage(String id, String path, int position) {
+
         HashMap<String,String> map = new HashMap<>();
         map.put(Constants.PATH,path);
         map.put(Constants.POS,String.valueOf(position));
+        map.put(Constants.ID,id);
         new OkImageAsync(client,networkInterface).execute(map);
     }
 

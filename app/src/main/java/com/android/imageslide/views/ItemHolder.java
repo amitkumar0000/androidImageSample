@@ -11,7 +11,7 @@ import com.android.imageslide.R;
 
 public class ItemHolder extends RecyclerView.ViewHolder {
     ImageView imageView;
-    TextView thumbnail;
+    TextView name;
     TextView desc;
     Context context;
 
@@ -19,7 +19,7 @@ public class ItemHolder extends RecyclerView.ViewHolder {
         super(itemView);
         context = itemView.getContext();
         imageView = itemView.findViewById(R.id.imageView);
-        thumbnail = itemView.findViewById(R.id.name);
+        name = itemView.findViewById(R.id.name);
         desc = itemView.findViewById(R.id.desc);
     }
 }

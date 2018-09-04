@@ -1,7 +1,11 @@
 package com.android.imageslide.presenter;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v4.graphics.BitmapCompat;
+import android.util.Log;
 
+import com.android.imageslide.Utils.Constants;
 import com.android.imageslide.contract.IItemPresenter;
 import com.android.imageslide.contract.INetworkInterface;
 import com.android.imageslide.contract.IViewInterface;
@@ -13,17 +17,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class ItemPresenter implements IItemPresenter,INetworkInterface {
 
-    ArrayList<Item> itemList;
+    Vector<Item> itemList;
     IViewInterface iViewInterface;
     NetworkManager networkManager;
 
-    public ItemPresenter(IViewInterface iViewInterface) {
+    public ItemPresenter(Context context, IViewInterface iViewInterface) {
         this.iViewInterface = iViewInterface;
-        networkManager = new NetworkManager();
-        itemList = new ArrayList<>();
+        networkManager = new NetworkManager(context);
+        itemList = new Vector<>();
     }
 
     @Override
@@ -36,9 +41,9 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
         return itemList.get(position);
     }
 
-    @Override
-    public void loadImage(String path, int position) {
-        networkManager.loadImage(path,position);
+
+    public void loadImage(String id, String path, int position) {
+        networkManager.loadImage(id,path,position);
 
     }
 
@@ -60,7 +65,7 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
                             .build();
 
                     itemList.add(item);
-                    loadImage(item.getThumbnail(),indx);
+                    loadImage(item.getId(),item.getThumbnail(),indx);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -80,6 +85,8 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
     public void onImageDownloadResponse(Bitmap bitmap,int position) {
         Item item = itemList.get(position);
         item.setBitmap(bitmap);
+//        Log.d(Constants.TAG,"Image Load at position:: "+ position +
+//                " Image Size::"+ BitmapCompat.getAllocationByteCount(bitmap)/1024+"KB");
         iViewInterface.notifyItemChanged(position);
     }
 }

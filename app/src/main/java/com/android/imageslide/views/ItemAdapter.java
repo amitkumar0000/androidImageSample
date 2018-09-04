@@ -1,21 +1,17 @@
 package com.android.imageslide.views;
 
-import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 
 import com.android.imageslide.R;
+import com.android.imageslide.Utils.Constants;
 import com.android.imageslide.contract.IItemPresenter;
 import com.android.imageslide.model.Item;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-
-import static com.android.imageslide.Utils.Constants.TAG;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemHolder> {
 
@@ -29,22 +25,33 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemHolder> {
     @Override
     public ItemHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
-        View view = layoutInflater.inflate(R.layout.item,viewGroup,false);
-        return new ItemHolder(view);
+        final View view = layoutInflater.inflate(R.layout.item,viewGroup,false);
+        final ItemHolder itemHolder = new ItemHolder(view);
+
+        itemHolder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemHolder.imageView.setAnimation(AnimationUtils.loadAnimation(view.getContext(),R.anim.zoom_in_anim));
+            }
+        });
+
+        return itemHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ItemHolder itemHolder, int position) {
         Item item = iItemPresenter.getItem(position);
-        itemHolder.thumbnail.setText(item.getName());
+        itemHolder.name.setText(item.getName());
         itemHolder.desc.setText(item.getDesc());
         if(item.getBitmap()!=null) {
             itemHolder.imageView.setImageBitmap(item.getBitmap());
+        }else{
+            itemHolder.imageView.setImageResource(R.mipmap.ic_launcher);
         }
-        String path = item.getThumbnail();
-        Log.d(TAG,"Image Link:: "+path);
-
+//        Log.d(Constants.TAG," Item name::" + item.getName()
+//                +" Item Position::"+ position);
     }
+
 
     @Override
     public int getItemCount() {

@@ -1,13 +1,16 @@
 package com.android.imageslide.model;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.android.imageslide.Utils.Constants;
 import com.android.imageslide.contract.INetworkInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -37,6 +40,14 @@ public class OkhttpAsync extends AsyncTask<String, Void, Void> {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+//                if (response.isSuccessful() &&
+//                        response.networkResponse() != null &&
+//                        response.networkResponse().code() ==
+//                                HttpURLConnection.HTTP_NOT_MODIFIED) {
+//                    // not modified, no need to do anything.
+//                    return;
+//                }
+//                Log.d(Constants.TAG,"Respon:: "+ response.body().string());
                 JSONArray responseArray = null;
                 try {
                     responseArray = new JSONArray(response.body().string());

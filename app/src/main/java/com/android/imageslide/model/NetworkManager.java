@@ -34,8 +34,7 @@ public class NetworkManager {
 
     public NetworkManager(Context context){
         OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
-        builder.cache(
-                new Cache(context.getCacheDir(), Constants.CACHE_SIZE_BYTES));
+        builder.cache(new Cache(context.getCacheDir(), Constants.CACHE_SIZE_BYTES));
         client = builder.build();
 //        itemUrl = Constants.url+":"+Constants.port;
         itemUrl = "https://rocky-caverns-52177.herokuapp.com/";

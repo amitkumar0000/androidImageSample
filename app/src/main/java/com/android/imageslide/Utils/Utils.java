@@ -5,9 +5,15 @@ import android.os.Build;
 import android.os.Environment;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.Call;
 
 public class Utils {
     public static final int IO_BUFFER_SIZE = 8 * 1024;
+
+    public static Map<Integer,Call> enqueuMap = new HashMap<>();
 
     private Utils() {};
 

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.util.LruCache;
 
 import com.android.imageslide.Utils.Constants;
+import com.android.imageslide.Utils.Utils;
 import com.android.imageslide.contract.INetworkInterface;
 import com.android.imageslide.views.ImageApplication;
 
@@ -16,6 +17,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -53,13 +56,39 @@ public class OkImageAsync extends AsyncTask<HashMap<String, String>, Void, Void>
             networkInterface.onImageDownloadResponse(bitmap, position);
 
         } else {//3. Call Network
-            networkCall(id,path, position);
+//            networkCallSync(id,path, position);
+            networkCallAsync(id,path,position);
         }
 
         return null;
     }
 
-    private void networkCall(String id,String path, int position) {
+    private void networkCallAsync(final String id,final String path,final int position) {
+        Request request = new Request.Builder().url(path).build();
+
+        Call call = client.newCall(request);
+
+        Utils.enqueuMap.put(position,call);
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                byte[] image = response.body().bytes();
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                bitmap = BitmapFactory.decodeByteArray(image, 0, image.length, options);
+                memCache.addBitmapToMemoryCache(path, bitmap);
+                diskLruImageCache.put(id, bitmap);
+                networkInterface.onImageDownloadResponse(bitmap, position);
+            }
+        });
+    }
+
+    private void networkCallSync(String id,String path, int position) {
         Request request = new Request.Builder().url(path).build();
         try {
             Response response = client.newCall(request).execute();

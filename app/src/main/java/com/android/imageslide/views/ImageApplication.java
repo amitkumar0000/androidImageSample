@@ -11,9 +11,6 @@ public class ImageApplication extends Application{
     static DiskLruImageCache diskCache;
     private Bitmap.CompressFormat mCompressFormat = Bitmap.CompressFormat.JPEG;
     private int mCompressQuality = 70;
-
-    private final Object mDiskCacheLock = new Object();
-    private boolean mDiskCacheStarting = true;
     private static final int DISK_CACHE_SIZE = 1024 * 1024 * 10; // 10MB
     private static final String DISK_CACHE_SUBDIR = "thumbnails";
 

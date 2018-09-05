@@ -41,6 +41,9 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
         return itemList.get(position);
     }
 
+    public Vector<Item> getItemList() {
+        return itemList;
+    }
 
     public void loadImage(String id, String path, int position) {
         networkManager.loadImage(id,path,position);

@@ -2,6 +2,7 @@ package com.android.imageslide.views;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,14 @@ import android.widget.ProgressBar;
 
 import com.android.imageslide.R;
 import com.android.imageslide.Utils.Constants;
+import com.android.imageslide.Utils.Utils;
 import com.android.imageslide.contract.IViewInterface;
+import com.android.imageslide.model.Item;
 import com.android.imageslide.presenter.ItemPresenter;
+
+import java.util.Vector;
+
+import okhttp3.Call;
 
 public class MainActivity extends AppCompatActivity implements IViewInterface {
 
@@ -37,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
         itemPresenter = new ItemPresenter(getApplicationContext(),this);
         initImageList();
         loadItem();
+
+        setScrollImageList();
     }
 
     private void loadItem() {
@@ -53,6 +62,43 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
             progressBar.setVisibility(View.GONE);
         }
 
+    }
+
+    private void setScrollImageList() {
+        imageList.setOnScrollListener(new RecyclerView.OnScrollListener(){
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                int firstVisiblePosition = gridLayoutManager.findFirstVisibleItemPosition();
+                int lastVisiblePosition = gridLayoutManager.findLastVisibleItemPosition();
+
+                for(int ind=0; ind < itemPresenter.getItemCount(); ind++){
+                    if(ind < firstVisiblePosition || ind > lastVisiblePosition){
+                        if(Utils.enqueuMap.containsKey(ind)) {
+                            Call call = Utils.enqueuMap.get(ind);
+                            call.cancel();
+                            Utils.enqueuMap.remove(ind);
+                            Log.d(Constants.TAG, "Cancelling Request at position:: " + ind);
+                        }
+                    }else {
+                        Item item = itemPresenter.getItemList().get(ind);
+                        if(ImageApplication.getMemCache().getBitmapFromMemCache(item.getThumbnail())==null) {
+                            itemPresenter.loadImage(item.getId(), item.getThumbnail(), ind);
+                        }
+                    }
+                }
+
+
+                Log.d(Constants.TAG,"first Visible Position "+ firstVisiblePosition
+                +" last Visible Position "+ lastVisiblePosition);
+
+            }
+        });
     }
 
     @Override

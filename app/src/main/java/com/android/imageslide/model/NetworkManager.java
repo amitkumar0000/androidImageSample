@@ -32,7 +32,8 @@ public class NetworkManager {
     String itemUrl;
 
 
-    public NetworkManager(Context context){
+    public NetworkManager(Context context,INetworkInterface networkInterface){
+        this.networkInterface=networkInterface;
         OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
         builder.cache(new Cache(context.getCacheDir(), Constants.CACHE_SIZE_BYTES));
         client = builder.build();
@@ -40,8 +41,7 @@ public class NetworkManager {
         itemUrl = "https://rocky-caverns-52177.herokuapp.com/";
     }
 
-    public void loadItem(INetworkInterface networkInterface) {
-        this.networkInterface=networkInterface;
+    public void loadItem() {
         new OkhttpAsync(client,networkInterface).execute(itemUrl);
     }
 

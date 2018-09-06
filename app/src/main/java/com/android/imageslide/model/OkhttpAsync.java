@@ -18,6 +18,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.android.imageslide.Utils.Constants.TAG;
+
 public class OkhttpAsync extends AsyncTask<String, Void, Void> {
 
     OkHttpClient client;
@@ -40,13 +42,14 @@ public class OkhttpAsync extends AsyncTask<String, Void, Void> {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-//                if (response.isSuccessful() &&
-//                        response.networkResponse() != null &&
-//                        response.networkResponse().code() ==
-//                                HttpURLConnection.HTTP_NOT_MODIFIED) {
-//                    // not modified, no need to do anything.
-//                    return;
-//                }
+                if (response.isSuccessful() &&
+                        response.networkResponse() != null &&
+                        response.networkResponse().code() ==
+                                HttpURLConnection.HTTP_NOT_MODIFIED) {
+                    Log.d(TAG,"Content not Modified");
+                    networkInterface.onContentNotModified();
+                    return;
+                }
 //                Log.d(Constants.TAG,"Respon:: "+ response.body().string());
                 JSONArray responseArray = null;
                 try {

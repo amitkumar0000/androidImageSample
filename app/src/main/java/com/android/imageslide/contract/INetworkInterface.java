@@ -9,4 +9,6 @@ public interface INetworkInterface {
     void onFailure(int error);
 
     void onImageDownloadResponse(Bitmap bitmap, int position);
+
+    void onContentNotModified();
 }

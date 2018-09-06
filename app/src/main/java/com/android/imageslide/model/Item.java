@@ -41,6 +41,12 @@ public class Item {
         return bitmap;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        Item item = (Item) obj;
+        return thumbnail.equals(item.thumbnail)?true:false;
+    }
+
     public static class Builder{
         String id;
         String name;

@@ -22,6 +22,7 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okio.BufferedSource;
 
 public class OkImageAsync extends AsyncTask<HashMap<String, String>, Void, Void> {
 
@@ -56,6 +57,8 @@ public class OkImageAsync extends AsyncTask<HashMap<String, String>, Void, Void>
             networkInterface.onImageDownloadResponse(bitmap, position);
 
         } else {//3. Call Network
+            Log.d(Constants.TAG, "Reading from Network");
+
 //            networkCallSync(id,path, position);
             networkCallAsync(id,path,position);
         }
@@ -81,9 +84,11 @@ public class OkImageAsync extends AsyncTask<HashMap<String, String>, Void, Void>
                 byte[] image = response.body().bytes();
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 bitmap = BitmapFactory.decodeByteArray(image, 0, image.length, options);
-                memCache.addBitmapToMemoryCache(path, bitmap);
-                diskLruImageCache.put(id, bitmap);
-                networkInterface.onImageDownloadResponse(bitmap, position);
+                if(bitmap!=null) {
+                    memCache.addBitmapToMemoryCache(path, bitmap);
+                    diskLruImageCache.put(id, bitmap);
+                    networkInterface.onImageDownloadResponse(bitmap, position);
+                }
             }
         });
     }

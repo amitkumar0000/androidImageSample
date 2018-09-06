@@ -4,4 +4,6 @@ public interface IViewInterface {
     void notifyDataSetChanged();
 
     void notifyItemChanged(int position);
+
+    void onContentNotModified();
 }

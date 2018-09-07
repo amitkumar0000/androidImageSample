@@ -2,10 +2,8 @@ package com.android.imageslide.presenter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v4.graphics.BitmapCompat;
 import android.util.Log;
 
-import com.android.imageslide.Utils.Constants;
 import com.android.imageslide.Utils.PreferencesManager;
 import com.android.imageslide.contract.IItemPresenter;
 import com.android.imageslide.contract.INetworkInterface;
@@ -17,10 +15,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Vector;
 
-import static com.android.imageslide.Utils.Constants.TAG;
+import static com.android.imageslide.Utils.Const.TAG;
 
 public class ItemPresenter implements IItemPresenter,INetworkInterface {
 
@@ -57,7 +54,7 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
 
     public void loadItem() {
         JSONArray jsonArray = PreferencesManager.getItemArray(context);
-        if(jsonArray!=null){
+        if(jsonArray!=null && jsonArray.length()>0){
             setItemListfromPref(jsonArray);
             loadItem(jsonArray);
         }
@@ -127,7 +124,7 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
     public void onImageDownloadResponse(Bitmap bitmap,int position) {
         Item item = itemList.get(position);
         item.setBitmap(bitmap);
-//        Log.d(Constants.TAG,"Image Load at position:: "+ position +
+//        Log.d(Const.TAG,"Image Load at position:: "+ position +
 //                " Image Size::"+ BitmapCompat.getAllocationByteCount(bitmap)/1024+"KB");
         iViewInterface.notifyItemChanged(position);
     }

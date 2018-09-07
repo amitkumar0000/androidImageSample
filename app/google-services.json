@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "678814998181",
+    "firebase_url": "https://imagesample-16483.firebaseio.com",
+    "project_id": "imagesample-16483",
+    "storage_bucket": "imagesample-16483.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678814998181:android:9dd4a7f9bb283b1a",
+        "android_client_info": {
+          "package_name": "com.android.imageslide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "678814998181-l1ml2o74sop5nfb49rb3s63l58tioi0i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQosQIrgEN2vC0B3iyEZY6C49GFxHue_g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

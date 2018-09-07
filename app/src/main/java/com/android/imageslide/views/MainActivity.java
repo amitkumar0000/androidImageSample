@@ -9,21 +9,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.android.imageslide.R;
-import com.android.imageslide.Utils.Constants;
+import com.android.imageslide.Utils.Const;
 import com.android.imageslide.Utils.Utils;
 import com.android.imageslide.contract.IViewInterface;
 import com.android.imageslide.model.Item;
 import com.android.imageslide.presenter.ItemPresenter;
-
-import java.util.Vector;
 
 import okhttp3.Call;
 
@@ -45,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
         progressBar = findViewById(R.id.progressbar);
         progressBarMore = findViewById(R.id.progressbarMore);
         imageList = findViewById(R.id.imagelist);
-//        imageList.setNestedScrollingEnabled(false);
 
         dividerDrawable = ContextCompat.getDrawable(this, R.drawable.divider);
 
@@ -101,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
                     itemPresenter.fetchItem();
                 }
 
-                Log.d(Constants.TAG,"first Visible Position "+  gridLayoutManager.findFirstVisibleItemPosition()
+                Log.d(Const.TAG,"first Visible Position "+  gridLayoutManager.findFirstVisibleItemPosition()
                         +" last Visible Position "+ gridLayoutManager.findLastVisibleItemPosition());
             }
         });
@@ -115,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
                     call.cancel();
                 }
                 Utils.enqueuMap.remove(ind);
-                Log.d(Constants.TAG, "Cancelling Request at position:: " + ind);
+                Log.d(Const.TAG, "Cancelling Request at position:: " + ind);
             }
         }else {
             Item item = itemPresenter.getItemList().get(ind);
@@ -155,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d(Constants.TAG,"Hide the Progress Bar");
+                Log.d(Const.TAG,"Hide the Progress Bar");
                 progressBarMore.setVisibility(View.GONE);
                 gridLayoutManager.scrollToPosition(itemPresenter.getItemCount());
             }

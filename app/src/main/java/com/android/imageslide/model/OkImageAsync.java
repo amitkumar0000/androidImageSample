@@ -4,17 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.util.LruCache;
 
-import com.android.imageslide.Utils.Constants;
+import com.android.imageslide.Utils.Const;
 import com.android.imageslide.Utils.Utils;
 import com.android.imageslide.contract.INetworkInterface;
 import com.android.imageslide.views.ImageApplication;
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
 
 import okhttp3.Call;
@@ -22,7 +18,6 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okio.BufferedSource;
 
 public class OkImageAsync extends AsyncTask<HashMap<String, String>, Void, Void> {
 
@@ -44,20 +39,20 @@ public class OkImageAsync extends AsyncTask<HashMap<String, String>, Void, Void>
     @Override
     protected Void doInBackground(HashMap<String, String>... maps) {
         HashMap<String, String> map = maps[0];
-        String path = map.get(Constants.PATH);
-        int position = Integer.parseInt(map.get(Constants.POS));
-        String id =map.get(Constants.ID);
+        String path = map.get(Const.PATH);
+        int position = Integer.parseInt(map.get(Const.POS));
+        String id =map.get(Const.ID);
         Thread.currentThread().setName("THD_IMG");
         if ((bitmap = memCache.getBitmapFromMemCache(path)) != null) {//1. Check in Memory Cache
-            Log.d(Constants.TAG, "Reading from MemCache");
+            Log.d(Const.TAG, "Reading from MemCache");
             networkInterface.onImageDownloadResponse(bitmap, position);
         } else if ((bitmap = diskLruImageCache.getBitmap(id)) != null) { //2. Check in Disk Cache
-            Log.d(Constants.TAG, "Reading from DiskCache");
+            Log.d(Const.TAG, "Reading from DiskCache");
             memCache.addBitmapToMemoryCache(path,bitmap);
             networkInterface.onImageDownloadResponse(bitmap, position);
 
         } else {//3. Call Network
-            Log.d(Constants.TAG, "Reading from Network");
+            Log.d(Const.TAG, "Reading from Network");
 
 //            networkCallSync(id,path, position);
             networkCallAsync(id,path,position);

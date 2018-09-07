@@ -1,6 +1,6 @@
 package com.android.imageslide.Utils;
 
-public class Constants {
+public class Const {
     public static final String url = "http://192.168.0.102";
     public static final String port = "5000";
     public static final String TAG = "ImageSlide";

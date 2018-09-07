@@ -2,14 +2,12 @@ package com.android.imageslide.views;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
 import com.android.imageslide.R;
-import com.android.imageslide.Utils.Constants;
 import com.android.imageslide.contract.IItemPresenter;
 import com.android.imageslide.model.Item;
 
@@ -17,13 +15,14 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemHolder> {
 
     IItemPresenter iItemPresenter;
 
+
     public ItemAdapter(IItemPresenter iItemPresenter){
         this.iItemPresenter = iItemPresenter;
     }
 
     @NonNull
     @Override
-    public ItemHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
+    public ItemHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
         final View view = layoutInflater.inflate(R.layout.item,viewGroup,false);
         final ItemHolder itemHolder = new ItemHolder(view);
@@ -38,6 +37,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemHolder> {
         return itemHolder;
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull ItemHolder itemHolder, int position) {
         Item item = iItemPresenter.getItem(position);
@@ -48,7 +48,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemHolder> {
         }else{
             itemHolder.imageView.setImageResource(R.mipmap.ic_launcher);
         }
-//        Log.d(Constants.TAG," Item name::" + item.getName()
+//        Log.d(Const.TAG," Item name::" + item.getName()
 //                +" Item Position::"+ position);
     }
 

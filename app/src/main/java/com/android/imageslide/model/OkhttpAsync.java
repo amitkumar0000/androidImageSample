@@ -3,7 +3,6 @@ package com.android.imageslide.model;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.android.imageslide.Utils.Constants;
 import com.android.imageslide.contract.INetworkInterface;
 
 import org.json.JSONArray;
@@ -18,7 +17,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.android.imageslide.Utils.Constants.TAG;
+import static com.android.imageslide.Utils.Const.TAG;
 
 public class OkhttpAsync extends AsyncTask<String, Void, Void> {
 
@@ -50,7 +49,7 @@ public class OkhttpAsync extends AsyncTask<String, Void, Void> {
                     networkInterface.onContentNotModified();
                     return;
                 }
-//                Log.d(Constants.TAG,"Respon:: "+ response.body().string());
+//                Log.d(Const.TAG,"Respon:: "+ response.body().string());
                 JSONArray responseArray = null;
                 try {
                     responseArray = new JSONArray(response.body().string());

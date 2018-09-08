@@ -1,4 +1,4 @@
-package com.android.imageslide.Utils;
+package com.android.imageslide.model;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,14 +15,28 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.imageslide.R;
+import com.android.imageslide.contract.IViewInterface;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Map;
 
-public class FireBasedMessagingService extends FirebaseMessagingService  {
+public class FireBasedMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     private static int count = 0;
+    IViewInterface iViewInterface;
+
+    public FireBasedMessagingService(){}
+
+    public FireBasedMessagingService(IViewInterface iViewInterface){
+        this.iViewInterface = iViewInterface;
+        Log.d(TAG," Setting the reference");
+    }
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         //Displaying data in log
@@ -30,11 +44,25 @@ public class FireBasedMessagingService extends FirebaseMessagingService  {
         Log.d(TAG, "Notification Message TITLE: " + remoteMessage.getNotification().getTitle());
         Log.d(TAG, "Notification Message BODY: " + remoteMessage.getNotification().getBody());
         Log.d(TAG, "Notification Message DATA: " + remoteMessage.getData().toString());
-//Calling method to generate notification
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            sendNotification(remoteMessage.getNotification().getTitle(),
-                    remoteMessage.getNotification().getBody(), remoteMessage.getData());
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("MESSAGE",remoteMessage.getNotification().getBody().toString());
+            Intent intent = new Intent();
+            intent.setAction("com.android.push");
+            intent.putExtra("Message",remoteMessage.getNotification().getBody().toString());
+            sendBroadcast(intent);
+//            iViewInterface.onNewContent(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
+//Calling method to generate notification
+//        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+//            sendNotification(remoteMessage.getNotification().getTitle(),
+//                    remoteMessage.getNotification().getBody(), remoteMessage.getData());
+//        }
     }
     //This method is only generating push notification
     private void sendNotification(String messageTitle, String messageBody, Map<String, String> row) {
@@ -53,5 +81,4 @@ public class FireBasedMessagingService extends FirebaseMessagingService  {
         notificationManager.notify(count, notificationBuilder.build());
         count++;
     }
-
 }

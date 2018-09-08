@@ -1,4 +1,4 @@
-package com.android.imageslide.Utils;
+package com.android.imageslide.model;
 
 import android.util.Log;
 

@@ -11,9 +11,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.imageslide.R;
 import com.android.imageslide.Utils.Const;
+import com.android.imageslide.model.FireBasedMessagingService;
 import com.android.imageslide.Utils.Utils;
 import com.android.imageslide.contract.IViewInterface;
 import com.android.imageslide.model.Item;
@@ -48,7 +50,14 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
         loadItem();
 
         setScrollImageList();
+
+        new FireBasedMessagingService(this);
+
+
+
     }
+
+
 
     private void loadItem() {
         itemPresenter.loadItem();
@@ -72,14 +81,6 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
-
-//                for(int ind=0; ind < itemPresenter.getItemCount(); ind++){
-//                    cancelUnVisible(ind,gridLayoutManager.findFirstVisibleItemPosition(),
-//                            gridLayoutManager.findLastVisibleItemPosition());
-//                }
-
-
             }
 
             @Override
@@ -93,30 +94,11 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
                     progressBarMore.setVisibility(View.VISIBLE);
                     itemPresenter.fetchItem();
                 }
-
-                Log.d(Const.TAG,"first Visible Position "+  gridLayoutManager.findFirstVisibleItemPosition()
-                        +" last Visible Position "+ gridLayoutManager.findLastVisibleItemPosition());
             }
         });
     }
 
-    private void cancelUnVisible(int ind, int firstVisiblePosition, int lastVisiblePosition) {
-        if(ind < firstVisiblePosition || ind > lastVisiblePosition){
-            if(Utils.enqueuMap.containsKey(ind)) {
-                Call call = Utils.enqueuMap.get(ind);
-                if(!call.isCanceled()) {
-                    call.cancel();
-                }
-                Utils.enqueuMap.remove(ind);
-                Log.d(Const.TAG, "Cancelling Request at position:: " + ind);
-            }
-        }else {
-            Item item = itemPresenter.getItemList().get(ind);
-            if(ImageApplication.getMemCache().getBitmapFromMemCache(item.getThumbnail())==null) {
-                itemPresenter.loadImage(item.getId(), item.getThumbnail(), ind);
-            }
-        }
-    }
+
 
     @Override
     public void notifyDataSetChanged() {
@@ -125,12 +107,22 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
             public void run() {
                 progressBar.setVisibility(View.GONE);
                 progressBarMore.setVisibility(View.GONE);
+                imageList.setVisibility(View.VISIBLE);
                 itemAdapter.notifyDataSetChanged();
             }
         });
 
     }
 
+    @Override
+    public void notifyItemRangeInserted(final int position, final int count) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                itemAdapter.notifyItemRangeInserted(position,count);
+            }
+        });
+    }
 
     @Override
     public void notifyItemChanged(final int position) {
@@ -154,5 +146,15 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
             }
         });
 
+    }
+
+    @Override
+    public void onNewContent(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this,message,Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

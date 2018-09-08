@@ -1,10 +1,17 @@
 package com.android.imageslide.presenter;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.support.v4.graphics.BitmapCompat;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.imageslide.Utils.Const;
 import com.android.imageslide.Utils.PreferencesManager;
+import com.android.imageslide.Utils.Utils;
 import com.android.imageslide.contract.IItemPresenter;
 import com.android.imageslide.contract.INetworkInterface;
 import com.android.imageslide.contract.IViewInterface;
@@ -17,9 +24,11 @@ import org.json.JSONObject;
 
 import java.util.Vector;
 
+import okhttp3.Call;
+
 import static com.android.imageslide.Utils.Const.TAG;
 
-public class ItemPresenter implements IItemPresenter,INetworkInterface {
+public class ItemPresenter implements IItemPresenter, INetworkInterface {
 
     Vector<Item> itemList;
     IViewInterface iViewInterface;
@@ -29,8 +38,9 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
     public ItemPresenter(Context context, IViewInterface iViewInterface) {
         this.context = context;
         this.iViewInterface = iViewInterface;
-        networkManager = new NetworkManager(context,this);
+        networkManager = new NetworkManager(context, this);
         itemList = new Vector<>();
+        register();
     }
 
     @Override
@@ -48,25 +58,35 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
     }
 
     public void loadImage(String id, String path, int position) {
-        networkManager.loadImage(id,path,position);
+        networkManager.loadImage(id, path, position);
 
+    }
+
+    @Override
+    public void canceloadImage(int position) {
+        Call call = Utils.enqueuMap.get(position);
+        if(call!=null && !call.isCanceled()) {
+            call.cancel();
+            Utils.enqueuMap.remove(position);
+            Log.d(Const.TAG, "onViewRecycled Cancelling Request at position:: " + position);
+        }
     }
 
     public void loadItem() {
         JSONArray jsonArray = PreferencesManager.getItemArray(context);
-        if(jsonArray!=null && jsonArray.length()>0){
+        if (jsonArray != null && jsonArray.length() > 0) {
             setItemListfromPref(jsonArray);
             loadItem(jsonArray);
         }
         networkManager.loadItem();
     }
 
-    public void fetchItem(){
+    public void fetchItem() {
         networkManager.loadItem();
     }
 
     private void setItemListfromPref(JSONArray jsonArray) {
-        for(int indx=0; indx < jsonArray.length(); indx++){
+        for (int indx = 0; indx < jsonArray.length(); indx++) {
             try {
                 JSONObject jsonObject = jsonArray.getJSONObject(indx);
                 Item item = new Item.Builder()
@@ -85,13 +105,16 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
 
     @Override
     public void onSuccess(JSONArray jsonArray) {
-       loadItem(jsonArray);
-        PreferencesManager.storeItemArray(context,jsonArray);
+        loadItem(jsonArray);
+        PreferencesManager.storeItemArray(context, jsonArray);
     }
 
-    public void loadItem(JSONArray jsonArray){
-        if(jsonArray!=null){
-            for(int indx=0; indx < jsonArray.length(); indx++){
+    public void loadItem(JSONArray jsonArray) {
+        boolean moreItemAdded = false;
+        int position = itemList.size();
+        int count = 0;
+        if (jsonArray != null) {
+            for (int indx = 0; indx < jsonArray.length(); indx++) {
                 try {
                     JSONObject jsonObject = jsonArray.getJSONObject(indx);
                     Item item = new Item.Builder()
@@ -100,19 +123,37 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
                             .setDesc(jsonObject.getString("desc"))
                             .setThumbnail(jsonObject.getString("link"))
                             .build();
-                    if(!itemList.contains(item)) {
-                        Log.d(TAG,"Delta Item:: "+ item.getName());
-                        itemList.add(item);
-                    }
-                    loadImage(item.getId(),item.getThumbnail(),indx);
+
+                    itemList.add(item);
+
+//                    if (!itemList.contains(item)) {
+//                        Log.d(TAG, "Delta Item:: " + item.getName());
+//                        moreItemAdded = true;
+//                        count++;
+//                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-            iViewInterface.notifyDataSetChanged();
+            if (moreItemAdded) {
+                iViewInterface.notifyItemRangeInserted(position, count);
+            } else {
+                iViewInterface.notifyDataSetChanged();
+            }
 
         }
+    }
+
+    private void register() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.android.push");
+        context.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, final Intent intent) {
+                iViewInterface.onNewContent(intent.getStringExtra("Message"));
+            }
+        }, intentFilter);
     }
 
     @Override
@@ -121,12 +162,13 @@ public class ItemPresenter implements IItemPresenter,INetworkInterface {
     }
 
     @Override
-    public void onImageDownloadResponse(Bitmap bitmap,int position) {
-        Item item = itemList.get(position);
-        item.setBitmap(bitmap);
-//        Log.d(Const.TAG,"Image Load at position:: "+ position +
-//                " Image Size::"+ BitmapCompat.getAllocationByteCount(bitmap)/1024+"KB");
-        iViewInterface.notifyItemChanged(position);
+    public void onImageDownloadResponse(Bitmap bitmap, int position) {
+
+        Log.d(Const.TAG, "Image Load at position:: " + position + " size::" + itemList.size() +
+                " Image Size::" + BitmapCompat.getAllocationByteCount(bitmap) / 1024 + "KB");
+            Item item = itemList.get(position);
+            item.setBitmap(bitmap);
+            iViewInterface.notifyItemChanged(position);
     }
 
     @Override

@@ -7,4 +7,8 @@ public interface IItemPresenter {
 
     Item getItem(int position);
 
+    void loadImage(String id,String url,int position);
+    void canceloadImage(int position);
+
+
 }

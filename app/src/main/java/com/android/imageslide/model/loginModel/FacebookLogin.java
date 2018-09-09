@@ -35,7 +35,7 @@ public class FacebookLogin {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
-                Log.d(Const.TAG," OnSucess");
+                Log.d(Const.TAG," OnSucess:: "+ loginResult);
                 loginPresenter.handleFacebookSignIn();
 
             }

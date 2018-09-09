@@ -11,4 +11,5 @@ public class Const {
     public static final String ID = "_id" ;
     public static final String PREF_NAME = "ItemResponse";
     public static final String ITEMLIST = "ITEMLIST";
+    public static final String IMAGESRC = "ImageInBitmap";
 }

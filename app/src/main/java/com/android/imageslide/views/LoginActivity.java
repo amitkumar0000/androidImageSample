@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.imageslide.R;
 import com.android.imageslide.Utils.Const;
@@ -88,6 +89,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void startMainActivity() {
+        Toast.makeText(this,"You have successfully Logged in...",Toast.LENGTH_SHORT).show();
         startActivity(new Intent(this,MainActivity.class));
         finish();
     }

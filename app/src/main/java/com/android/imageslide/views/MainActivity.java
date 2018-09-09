@@ -1,15 +1,24 @@
 package com.android.imageslide.views;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -20,6 +29,8 @@ import com.android.imageslide.Utils.Utils;
 import com.android.imageslide.contract.IViewInterface;
 import com.android.imageslide.model.Item;
 import com.android.imageslide.presenter.ItemPresenter;
+
+import java.io.ByteArrayOutputStream;
 
 import okhttp3.Call;
 
@@ -32,15 +43,17 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
     ProgressBar progressBar;
     ProgressBar progressBarMore;
     Drawable dividerDrawable;
+    ImageView imageViewPreview;
+    FrameLayout imageFrame;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.AppTheme_NoActionBar);
-
         setContentView(R.layout.activity_main);
         progressBar = findViewById(R.id.progressbar);
         progressBarMore = findViewById(R.id.progressbarMore);
         imageList = findViewById(R.id.imagelist);
+        imageViewPreview = findViewById(R.id.itemImagePreview);
+        imageFrame = findViewById(R.id.ImageFrame);
 
         dividerDrawable = ContextCompat.getDrawable(this, R.drawable.divider);
 
@@ -51,13 +64,40 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
 
         setScrollImageList();
 
+        imageViewPreview.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ImageActivity.class);
+
+                Bitmap bmp=((BitmapDrawable)imageViewPreview.getDrawable()).getBitmap();
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+
+                intent.putExtra(Const.IMAGESRC,byteArray);
+
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(MainActivity.this,
+                                imageViewPreview,
+                                ViewCompat.getTransitionName(imageViewPreview));
+                startActivity(intent, options.toBundle());
+            }
+        });
+
         new FireBasedMessagingService(this);
-
-
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if(imageViewPreview.getVisibility() == View.VISIBLE){
+            imageViewPreview.setVisibility(View.GONE);
+        }else {
+            super.onBackPressed();
+        }
 
+    }
 
     private void loadItem() {
         itemPresenter.loadItem();
@@ -86,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+//                imageViewPreview.setVisibility(View.GONE);
+                isImageClick = false;
                 int scrollItemCount = gridLayoutManager.findFirstVisibleItemPosition();
                 int childItemCount = gridLayoutManager.getChildCount();
                 if(scrollItemCount+childItemCount ==
@@ -156,5 +198,17 @@ public class MainActivity extends AppCompatActivity implements IViewInterface {
                 Toast.makeText(MainActivity.this,message,Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    boolean isImageClick = false;
+    public void setBitmapImage(Bitmap bitmapImage){
+        if(!isImageClick) {
+            imageViewPreview.setVisibility(View.VISIBLE);
+            imageViewPreview.setImageBitmap(bitmapImage);
+            isImageClick = true;
+        }else{
+            imageViewPreview.setVisibility(View.GONE);
+            isImageClick = false;
+        }
     }
 }

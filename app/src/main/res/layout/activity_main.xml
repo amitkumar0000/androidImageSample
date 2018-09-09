@@ -37,8 +37,29 @@
             app:layout_constraintHorizontal_bias="0.467"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ImageFrame" />
+
     </FrameLayout>
 
+
+    <ImageView
+        android:id="@+id/itemImagePreview"
+        android:layout_width="250dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="fitXY"
+        android:visibility="gone"
+        android:src="@drawable/img1"
+        app:layout_constraintBottom_toBottomOf="@+id/ImageFrame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ImageFrame"
+        android:transitionName="simple_activity_transition"
+        app:layout_constraintVertical_bias="0.574" />
 
 
 

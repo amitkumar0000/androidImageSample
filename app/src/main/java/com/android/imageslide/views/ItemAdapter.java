@@ -31,14 +31,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemHolder> {
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
         final View view = layoutInflater.inflate(R.layout.item,viewGroup,false);
         final ItemHolder itemHolder = new ItemHolder(view);
-
-        itemHolder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                itemHolder.imageView.setAnimation(AnimationUtils.loadAnimation(view.getContext(),R.anim.zoom_in_anim));
-            }
-        });
-
         return itemHolder;
     }
 
